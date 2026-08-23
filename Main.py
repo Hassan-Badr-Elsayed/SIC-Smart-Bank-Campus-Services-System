@@ -1,3 +1,10 @@
+import copy
+import json
+
+with open("users.json", "r") as file:
+    users = json.load(file)
+
+
 Deposit = "0"
 Withdraw = "1"
 Transfer = "2"
@@ -9,44 +16,11 @@ Exit = "7"
 
 target_user = "no one"
 
-users = [
-    {
-        "id": 1,
-        "profile": {
-            "name": "Ahmed",
-            "password": "1233",
-            "phone": "01011111111",
-            "email": "example@gmail.com",
-            "gender": "Male",
-            "age": 20,
-            "city": "Fayoum",
-            "account type": "Savings"
-        },
-        "wallet": {
-            "balance" : 0,
-            "currency" : "EGP"
-        },
-        "hestory" :[]      
-    },
-    {
-        "id": 2,
-        "profile": {
-            "name": "Mohamed",
-            "password": "124",
-            "phone": "01011111112",
-            "email": "Mohmaed@gmail.com",
-            "gender": "Male",
-            "age": 20,
-            "city": "cairo",
-            "account type": "Savings"
-        },
-        "wallet": {
-            "balance" : 0,
-            "currency" : "EGP"
-        },
-        "hestory" :[]      
-    }
-]
+
+
+def save_users():
+    with open("users.json", "w") as file:
+        json.dump(users, file, indent=4)
 
 # The beginning of the program
 while True:
@@ -141,7 +115,8 @@ To close the system, enter exit
                 "gender": gender,
                 "age": age,
                 "city": city,
-                "account type": account_type
+                "account type": account_type,
+                "stat": "user"
             },
             "wallet": {
                 "balance" : 0,
@@ -151,6 +126,7 @@ To close the system, enter exit
         }
 
         users.append(new_user)
+        save_users()
         print(f"Sign up successful. Your ID is {new_id}")
 
     # Login Page
@@ -198,342 +174,740 @@ To close the system, enter exit
             print("Maximum failed attempts reached. Returning to main menu...\n")
         else:
             # ===================== AFTER THIS PAGE: OPERATION MENU ===================
-            print(f"\n--- User Menu for {cureent_user['profile']['name']} ---")
     ######################################Hassan###########################################################
-            while True:
-                print(f"*************** Welcome back {cureent_user['profile']['name']} ***************")
-                print("[0] Deposit")
-                print("[1] Withdraw")
-                print("[2] Transfer")
-                print("[3] Transaction history")
-                print("[4] Reports")
-                print("[5] Branch/ATM status")
-                print("[6] Update personal info")
-                print("[7] Exit")
-                
-                user_input = input("please enter what do you want to do: ")
+            if (cureent_user['profile']['stat'] == 'admin'):
+                while True:
+                    print(f"*************** Welcome back {cureent_user['profile']['name']} ***************")
+                    print("[0] Deposit")
+                    print("[1] Withdraw")
+                    print("[2] Transfer")
+                    print("[3] Transaction history")
+                    print("[4] Reports")
+                    print("[5] Branch/ATM status")
+                    print("[6] Update personal info")
+                    print("[7] Exit")
                     
-                if (user_input == Deposit):
-                    deposit_value,currency = input("please enter amount and currency: ").split()
-                    if(deposit_value.isdigit()):
-                        deposit_value = int(deposit_value)
-
-                        if (deposit_value <= 0 and (currency != "EGP" and currency != "SAR" and currency != "USD")):
-                            print("Invalid value and currency")
-                            continue
-                        elif (deposit_value <= 0):
-                            print("Invalid value")
-                            continue
-                        elif (currency != "EGP" and currency != "SAR" and currency != "USD"):
-                            print("Invalid value")
-                            continue
-
-                        if (currency == "SAR" or currency == "USD" or currency == "EGP"):
-                            if(currency == "SAR"):
-                                cureent_user["wallet"][currency] = "SAR"
-                                amount_in_egp = deposit_value * 9
-                                transaction_msg = f"Deposit: {deposit_value} {currency} (+{amount_in_egp} EGP)"
-                                cureent_user["hestory"].append(transaction_msg)
-                                cureent_user["wallet"]["balance"] += amount_in_egp
-
-                            elif (currency == "USD"):
-                                cureent_user["wallet"][currency] = "USD"
-                                amount_in_egp = deposit_value * 30
-                                transaction_msg = f"Deposit: {deposit_value} {currency} (+{amount_in_egp} EGP)"
-                                cureent_user["hestory"].append(transaction_msg)
-                                cureent_user["wallet"]["balance"] += amount_in_egp
-
-                            else:
-                                cureent_user["wallet"][currency] = "EGP"
-                                amount_in_egp = deposit_value
-                                transaction_msg = f"Deposit: {deposit_value} {currency}"
-                                cureent_user["hestory"].append(transaction_msg)
-                                cureent_user["wallet"]["balance"] += amount_in_egp
-                    else:
-                        print("Invalid input")
-                        print("the process isn't success")
-                        continue
-        ########################################################################################################################
-                elif (user_input == Withdraw):    
-                    withdraw_value = input("please enter the value: ")
-                    if(withdraw_value.isdigit()):
-                        withdraw_value = int(withdraw_value)
-                        if(withdraw_value <= 0):
+                    user_input = input("please enter what do you want to do: ")
+                        
+                    if (user_input == Deposit):
+                        deposit_input = input("please enter amount and currency: ").split()
+                        
+                        if len(deposit_input) != 2:
                             print("Invalid input")
-                            print("the process isn't sucsess please try again")
                             continue
+                        
+                        deposit_value, currency = deposit_input
+                        if(deposit_value.isdigit()):
+                            deposit_value = int(deposit_value)
+                        
+
+                            if (deposit_value <= 0 and (currency != "EGP" and currency != "SAR" and currency != "USD")):
+                                print("Invalid value and currency")
+                                continue
+                            elif (deposit_value <= 0):
+                                print("Invalid value")
+                                continue
+                            elif (currency != "EGP" and currency != "SAR" and currency != "USD"):
+                                print("Invalid value")
+                                continue
+
+                            if (currency == "SAR" or currency == "USD" or currency == "EGP"):
+                                if(currency == "SAR"):
+                                    cureent_user["wallet"][currency] = "SAR"
+                                    amount_in_egp = deposit_value * 9
+                                    transaction_msg = f"Deposit: {deposit_value} {currency} (+{amount_in_egp} EGP)"
+                                    cureent_user["hestory"].append(transaction_msg)
+                                    cureent_user["wallet"]["balance"] += amount_in_egp
+                                    save_users()
+
+                                elif (currency == "USD"):
+                                    cureent_user["wallet"][currency] = "USD"
+                                    amount_in_egp = deposit_value * 30
+                                    transaction_msg = f"Deposit: {deposit_value} {currency} (+{amount_in_egp} EGP)"
+                                    cureent_user["hestory"].append(transaction_msg)
+                                    cureent_user["wallet"]["balance"] += amount_in_egp
+                                    print("process success")
+
+                                    save_users()
+
+                                else:
+                                    cureent_user["wallet"][currency] = "EGP"
+                                    amount_in_egp = deposit_value
+                                    transaction_msg = f"Deposit: {deposit_value} {currency}"
+                                    cureent_user["hestory"].append(transaction_msg)
+                                    cureent_user["wallet"]["balance"] += amount_in_egp
+                                    print("process success")
+
+                                    save_users()
                         else:
-                            if(withdraw_value > cureent_user["wallet"]["balance"]):
-                                print("you don't have enogh money")
-                                print("the process isn't sucsess")
+                            print("Invalid input")
+                            print("the process isn't success")
+                            continue
+            ########################################################################################################################
+                    elif (user_input == Withdraw):    
+                        withdraw_value = input("please enter the value: ")
+                        if(withdraw_value.isdigit()):
+                            withdraw_value = int(withdraw_value)
+                            if(withdraw_value <= 0):
+                                print("Invalid input")
+                                print("the process isn't sucsess please try again")
                                 continue
                             else:
-                                cureent_user["wallet"]["balance"] -= withdraw_value
+                                if(withdraw_value > cureent_user["wallet"]["balance"]):
+                                    print("you don't have enogh money")
+                                    print("the process isn't sucsess")
+                                    continue
+                                else:
+                                    cureent_user["wallet"]["balance"] -= withdraw_value
 
-                                transaction_msg = f"Withdraw: {withdraw_value}"
+                                    transaction_msg = f"Withdraw: {withdraw_value}"
+                                    cureent_user["hestory"].append(transaction_msg)
+                                    save_users()
+                                    print("process success")
+                        else:
+                            print("Invalid value")
+                            print("the process isn't sucsess please try again")
+
+            ############################################################################################################################
+                    elif (user_input == Transfer):
+                        id_input = input("please enter the id of the target user: ")
+
+                        if not id_input.isdigit():
+                            print("Invalid ID")
+                            continue
+
+                        id_target_user = int(id_input)
+                        target_user = "no one"
+
+                        for u in users:
+                            if u["id"] == id_target_user:
+                                target_user = u
+                        if (target_user == cureent_user):
+                            print("you can't transfer to your self")
+                            continue
+                        elif(target_user == "no one"):
+                            print("Invalid Id number")
+                            continue
+
+                        transfer_value = input("Enter The Transfer value: ")
+                        if not transfer_value.isdigit():
+                            print("Invalid input")
+                            continue
+
+                        if (int(transfer_value) <= 0):
+                            print("Invalid input")
+                            print("the Transfer isn't sucsess please try again")
+                            continue
+                        else:
+                            transfer_value = int(transfer_value)
+                            if(transfer_value > cureent_user["wallet"]["balance"]):
+                                print("you don't have enogh money please deposit money and try again")
+                                print("the Transfer isn't sucsess ")
+                            elif(transfer_value <= cureent_user["wallet"]["balance"]):
+                                cureent_user["wallet"]["balance"] -= transfer_value
+                                transaction_msg = f"transfer to {target_user['profile']['name']}: {transfer_value}"
+                                save_users()
                                 cureent_user["hestory"].append(transaction_msg)
-                                print("process success")
-                    else:
-                        print("Invalid value")
-                        print("the process isn't sucsess please try again")
+                                save_users()
+                                
 
-        ############################################################################################################################
-                elif (user_input == Transfer):
-                    id_target_user = int(input("please enter the id of the target user: "))
-                    for u in users:
-                        if u["id"] == id_target_user:
-                            target_user = u
-                    if (target_user == cureent_user):
-                        print("you can't transfer to your self")
-                        continue
-                    elif(target_user == "no one"):
-                        print("Invalid Id number")
-                        continue
+                                target_user["wallet"]["balance"] += transfer_value
+                                save_users()
+                                transaction_msg = f"transfer from {cureent_user['profile']['name']}: {transfer_value}"
+                                cureent_user["hestory"].append(transaction_msg)
+                                save_users()
+                                print("Transfer success")
+                                
 
-                    transfer_value = input("Enter The Transfer value: ")
+            ###########################################################################################################################
+                    elif (user_input == Transaction_history):
+                        if (cureent_user["hestory"] == []):
+                            print("you don't have Transaction_history")
+                            continue
+                        else:
+                            for i in cureent_user["hestory"]:
+                                print(i)
+            ##################################################################################################################################
+                    elif (user_input == Reports):
+                        while True:
+                            print("\n================================")
+                            print("***************** REPORTS MENU *****************")
+                            print("================================================")
+                            print("1. Duplicate detection")
+                            print("2. User set analysis")
+                            print("3. Transaction reports")
+                            print("4. Membership check")
+                            print("5. Back to main menu")
+                            choice = input("Enter choice: ")
 
-                    if (int(transfer_value) <= 0):
-                        print("Invalid input")
-                        print("the Transfer isn't sucsess please try again")
-                        continue
-                    else:
-                        transfer_value = int(transfer_value)
-                        if(transfer_value > cureent_user["wallet"]["balance"]):
-                            print("you don't have enogh money please deposit money and try again")
-                            print("the Transfer isn't sucsess ")
-                        elif(transfer_value <= cureent_user["wallet"]["balance"]):
-                            cureent_user["wallet"]["balance"] -= transfer_value
-                            transaction_msg = f"transfer to {target_user['profile']['name']}: {transfer_value}"
-                            cureent_user["hestory"].append(transaction_msg)
+                            if choice == "1":
+                                # DUPLICATE REPORT
+                                phone_list = []
+                                email_list = []
 
-                            target_user["wallet"]["balance"] += transfer_value
-                            transaction_msg = f"transfer from {cureent_user['profile']['name']}: {transfer_value}"
-                            cureent_user["hestory"].append(transaction_msg)
-                            print("Transfer success")
+                                for user in users:
+                                    phone_list.append(user["profile"]["phone"])
+                                    email_list.append(user["profile"]["email"])
 
-        ###########################################################################################################################
-                elif (user_input == Transaction_history):
-                    if (cureent_user["hestory"] == []):
-                        print("you don't have Transaction_history")
-                        continue
-                    else:
-                        for i in cureent_user["hestory"]:
-                            print(i)
-        ##################################################################################################################################
-                elif (user_input == Reports):
-                    while True:
-                        print("\n================================")
-                        print("***************** REPORTS MENU*****************")
-                        print("========================================")
-                        print("1. Duplicate detection")
-                        print("2. User set analysis")
-                        print("3. transaction reports")
-                        print("4. Membership check")
-                        print("5. back to main menu")
-                        choice = input("enter choice: ")
+                                # Using sets for efficient duplicate finding
+                                seen_phones = set()
+                                duplicate_phones = set()
+                                for phone in phone_list:
+                                    if phone in seen_phones:
+                                        duplicate_phones.add(phone)
+                                    else:
+                                        seen_phones.add(phone)
 
-                        if choice == "1":
-                            # DUPLICATE REPORT
-                            phone_list = []
-                            email_list = []
+                                seen_emails = set()
+                                duplicate_emails = set()
+                                for email in email_list:
+                                    if email in seen_emails:
+                                        duplicate_emails.add(email)
+                                    else:
+                                        seen_emails.add(email)
+                                        
+                                print("\n========== DUPLICATE REPORT ==========")
+                                print(f"Duplicate phone numbers: {list(duplicate_phones) if duplicate_phones else 'None'}")
+                                print(f"Duplicate emails: {list(duplicate_emails) if duplicate_emails else 'None'}")
 
-                            for user in users:
-                                phone_list.append(user["profile"]["phone"])
-                                email_list.append(user["profile"]["email"])
+                            elif choice == "2":
+                                # SET ANALYSIS
+                                active_users = set()
+                                vip_users = set()
+                                failed_login_users = set()
+                                transfer_users = set()
 
-                            duplicate_phones = []
-                            for phone in phone_list:
-                                if phone_list.count(phone) > 1 and phone not in duplicate_phones:
-                                    duplicate_phones.append(phone)
+                                for u in users:
+                                    username = u["profile"]["name"]
+                                    # Fixed logic: checking inside "profile" safely
+                                    if u.get("profile", {}).get("active") == True:
+                                        active_users.add(username)
+                                    if u.get("profile", {}).get("vip") == True:
+                                        vip_users.add(username)
+                                    if u.get("profile", {}).get("failed_logins", 0) > 0:
+                                        failed_login_users.add(username)
 
-                            duplicate_emails = []
-                            for email in email_list:
-                                if email_list.count(email) > 1 and email not in duplicate_emails:
-                                    duplicate_emails.append(email)
+                                    # Using "hestory" to match your original dictionary key
+                                    history = u.get("hestory", [])
+                                    for transaction in history:
+                                        if "transfer" in transaction.lower():
+                                            transfer_users.add(username)
+                                            break
+
+                                print("\n============== USER SEGMENTS ==========")
+                                print(f"Active users: {active_users or 'None'}")
+                                print(f"VIP users: {vip_users or 'None'}")
+                                print(f"Users with failed login: {failed_login_users or 'None'}")
+                                print(f"Users with transfers: {transfer_users or 'None'}")
+
+                                print("\n========== UNION ==============")
+                                active_or_vip = active_users.union(vip_users)
+                                print(f"Active OR VIP: {active_or_vip or 'None'}")
+
+                                print("\n=============== INTERSECTION ==========")
+                                active_and_vip = active_users.intersection(vip_users)
+                                print(f"Active AND VIP: {active_and_vip or 'None'}")
+
+                                print("\n============= DIFFERENCE ==========")
+                                active_not_vip = active_users.difference(vip_users)
+                                print(f"Active but NOT VIP: {active_not_vip or 'None'}")
+
+                                print("\n================ SYMMETRIC DIFFERENCE ==========")
+                                active_vip_difference = active_users.symmetric_difference(vip_users)
+                                print(f"Active or VIP, but NOT both: {active_vip_difference or 'None'}")
+
+                            elif choice == "3":
+                                # TRANSACTION REPORTS
+                                print("\n========== TRANSACTION REPORT ==========")
+
+                                transaction_frequency = {}
+
+                                for u in users:
+                                    username = u["profile"]["name"]
+                                    history = u.get("hestory", [])
+
+                                    user_transaction_count = {}
+
+                                    for transaction in history:
+                                        # Fix: gracefully handle string splitting
+                                        if ":" in transaction:
+                                            transaction_type = transaction.split(":")[0].strip()
+                                        else:
+                                            transaction_type = transaction.split()[0].strip()
+
+                                        user_transaction_count[transaction_type] = user_transaction_count.get(transaction_type, 0) + 1
+                                        transaction_frequency[transaction_type] = transaction_frequency.get(transaction_type, 0) + 1
+
+                                    if user_transaction_count:
+                                        print(f"\nUser: {username}")
+                                        for transaction_type, count in user_transaction_count.items():
+                                            if count > 1:
+                                                print(f"Repeated {transaction_type}: {count} times")
+
+                                print("\n========== TRANSACTION FREQUENCY ==========")
+                                if not transaction_frequency:
+                                    print("No transactions recorded yet.")
+                                else:
+                                    for transaction_type, count in transaction_frequency.items():
+                                        print(f"{transaction_type}: {count}")
+
+                            elif choice == "4":
+                                # MEMBERSHIP CHECK
+                                active_users = set()
+                                vip_users = set()
+                                failed_login_users = set()
+                                transfer_users = set()
+
+                                for u in users:
+                                    username = u["profile"]["name"]
+                                    if u.get("profile", {}).get("active") == True:
+                                        active_users.add(username)
+                                    if u.get("profile", {}).get("vip") == True:
+                                        vip_users.add(username)
+                                    if u.get("profile", {}).get("failed_logins", 0) > 0:
+                                        failed_login_users.add(username)
                                     
-                            print("\n========== DUPLICATE REPORT ==========")
+                                    history = u.get("hestory", [])
+                                    for transaction in history:
+                                        if "transfer" in transaction.lower():
+                                            transfer_users.add(username)
+                                            break
 
-                            if len(duplicate_phones) == 0:
-                                print("Duplicate phone numbers: None")
+                                print("\n========== MEMBERSHIP CHECK ==========")
+                                check_username = input("Enter username: ")
+                                
+                                all_usernames = [u["profile"]["name"] for u in users]
+
+                                if check_username not in all_usernames:
+                                    print("User doesn't exist.")
+                                else:
+                                    print("\nChoose a segment:")
+                                    print("1. Active")
+                                    print("2. VIP")
+                                    print("3. Failed login")
+                                    print("4. Transfers")
+
+                                    while True:
+                                        seg_choice = input("Enter choice: ")
+
+                                        if seg_choice == "1":
+                                            print(f"Is {check_username} active? {check_username in active_users}")
+                                            break
+                                        elif seg_choice == "2":
+                                            print(f"Is {check_username} VIP? {check_username in vip_users}")
+                                            break
+                                        elif seg_choice == "3":
+                                            print(f"Has {check_username} failed login? {check_username in failed_login_users}")
+                                            break
+                                        elif seg_choice == "4":
+                                            print(f"Did {check_username} make a transfer? {check_username in transfer_users}")
+                                            break
+                                        else:
+                                            print("Invalid choice, try again.")
+
+                            elif choice == "5":
+                                break
+
                             else:
-                                print("Duplicate phone numbers:", duplicate_phones)
+                                print("Invalid choice, try again.")
 
-                            if len(duplicate_emails) == 0:
-                                print("Duplicate emails: None")
-                            else:
-                                print("Duplicate emails:", duplicate_emails)
+            ###################################################################################            
+                    elif(user_input == Branch_ATM_status):
+                        atm_matrix = [[1, 1, 0, 1], [1, 0, 1, 1], [0, 1, 1, 0],[1, 1, 1, 0]]
+                        while True:
+                            print("\n===============================")
+                            print("*************ATM MANAGEMENT************")
+                            print("==============================")
+                            print("1. Display ATM matrix")
+                            print("2. Count ATMs")
+                            print("3. Update ATM")
+                            print("4. Back to main menu")
+                            choice= input("enter choice: ")
 
-                        elif choice == "2":
-                            # SET ANALYSIS
-                            active_users = set()
-                            vip_users = set()
-                            failed_login_users = set()
-                            transfer_users = set()
+                            if choice == "1":
+                                print("\n========== ATM AVAILABILITY ==========")
+                                print("    ", end="")
 
-                            for u in users:
-                                username = u["profile"]["name"]
-                                if u.get("active") == True:
-                                    active_users.add(username)
+                                # Print column numbers based on longest row
+                                max_cols = 0
+                                for row in atm_matrix:
+                                    if len(row) > max_cols:
+                                        max_cols = len(row)
+                                for col in range(max_cols):
+                                    print("C" + str(col + 1), end="\t")
+                                print()
 
-                                if u.get("vip") == True:
-                                    vip_users.add(username)
+                                # Print rows
+                                for row_index in range(len(atm_matrix)):
+                                    print("Row", row_index + 1, end="\t")
+                                    for col_index in range(len(atm_matrix[row_index])):
+                                        if atm_matrix[row_index][col_index] == 1:
+                                            print(1, end="\t")
+                                        else:
+                                            print(0, end="\t")
+                                    print()
 
-                                if u.get("failed_logins", 0) > 0:
-                                    failed_login_users.add(username)
+                            elif choice == "2":
+                                available = 0
+                                unavailable = 0
+                                for row in atm_matrix:
+                                    available += row.count(1)
+                                    unavailable += row.count(0)
+                                print("\n========== ATM REPORT =============")
+                                print("Available ATMs:", available)
+                                print("Unavailable ATMs:", unavailable)
 
-                                history = u.get("hestory", [])
-                                for transaction in history:
-                                    if "transfer" in transaction:
-                                        transfer_users.add(username)
-                                        break
-
-                            print("\n============== USER SEGMENTS ==========")
-                            print("Active users:", active_users)
-                            print("VIP users:", vip_users)
-                            print("Users with failed login:", failed_login_users)
-                            print("Users with transfers:", transfer_users)
-
-                            print("\n========== UNION ==============")
-                            active_or_vip = active_users.union(vip_users)
-                            print("Active OR VIP:")
-                            print(active_or_vip)
-
-                            print("\n=============== INTERSECTION ==========")
-                            active_and_vip = active_users.intersection(vip_users)
-                            print("Active AND VIP:")
-                            print(active_and_vip)
-
-                            print("\n============= DIFFERENCE ==========")
-                            active_not_vip = active_users.difference(vip_users)
-                            print("Active but NOT VIP:")
-                            print(active_not_vip)
-
-                            print("\n================ SYMMETRIC DIFFERENCE ==========")
-                            active_vip_difference = active_users.symmetric_difference(vip_users)
-                            print("Active or VIP, but NOT both:")
-                            print(active_vip_difference)
-
-                        elif choice == "3":
-                            # TRANSACTION REPORTS
-                            print("\n========== TRANSACTION REPORT ==========")
-
-                            transaction_frequency = {}
-
-                            for u in users:
-                                username = u["profile"]["name"]
-                                history = u.get("hestory", [])
-
-                                user_transaction_count = {}
-
-                                for transaction in history:
-                                    transaction_type = transaction.split(":")[0]
-
-                                    user_transaction_count[transaction_type] = (
-                                        user_transaction_count.get(transaction_type, 0) + 1
-                                    )
-
-                                    transaction_frequency[transaction_type] = (
-                                        transaction_frequency.get(transaction_type, 0) + 1
-                                    )
-
-                                print("\nUser:", username)
-
-                                for transaction_type in user_transaction_count:
-                                    if user_transaction_count[transaction_type] > 1:
-                                        print(
-                                            "Repeated",
-                                            transaction_type,
-                                            ":",
-                                            user_transaction_count[transaction_type],
-                                            "times"
-                                        )
-
-                            print("\n========== TRANSACTION FREQUENCY ==========")
-
-                            for transaction_type in transaction_frequency:
-                                print(
-                                    transaction_type,
-                                    ":",
-                                    transaction_frequency[transaction_type]
-                                )
-
-                        elif choice == "4":
-                            # MEMBERSHIP CHECK
-                            active_users = set()
-                            vip_users = set()
-                            failed_login_users = set()
-                            transfer_users = set()
-
-                            for u in users:
-                                username = u["profile"]["name"]
-                                if u.get("active") == True:
-                                    active_users.add(username)
-                                if u.get("vip") == True:
-                                    vip_users.add(username)
-                                if u.get("failed_logins", 0) > 0:
-                                    failed_login_users.add(username)
-                                history = u.get("hestory", [])
-
-                                for transaction in history:
-                                    if "transfer" in transaction:
-                                        transfer_users.add(username)
-                                        break
-
-                            print("\n========== MEMBERSHIP CHECK ==========")
-                            check_username = input("Enter username: ")
-                            
-                            all_usernames = [u["profile"]["name"] for u in users]
-
-                            if check_username not in all_usernames:
-                                print("User doesn't exist.")
-                            else:
-                                print("\nChoose a segment:")
-                                print("1. Active")
-                                print("2. VIP")
-                                print("3. Failed login")
-                                print("4. transfers")
+                            elif choice == "3":
+                                print("\n========== UPDATE ATM ==========")
 
                                 while True:
-                                    seg_choice = input("Enter choice: ")
+                                    try:
+                                        row = int(input("Enter row number: "))
+                                        column = int(input("Enter column number: "))
+                                        row_index = row - 1
+                                        col_index = column - 1
 
-                                    if seg_choice == "1":
-                                        print("is user active?", check_username in active_users)
-                                        break
-                                    elif seg_choice == "2":
-                                        print("is user VIP?", check_username in vip_users)
-                                        break
-                                    elif seg_choice == "3":
-                                        print("Has user failed login?", check_username in failed_login_users)
-                                        break
-                                    elif seg_choice == "4":
-                                        print("did user make a transfer?", check_username in transfer_users)
-                                        break
-                                    else:
-                                        print("invalid choice, try again.")
+                                        if row_index < 0 or row_index >= len(atm_matrix):
+                                            print("invalid row, Try again.")
+                                            continue
 
-                        elif choice == "5":
-                            break
+                                        # this is for each row can have a different length
+                                        if col_index < 0 or col_index >= len(atm_matrix[row_index]):
+                                            print("invalid column for this row, try again.")
+                                            continue
+                                        break
+                                    except ValueError:
+                                        print("please enter numbers only")
 
+                                while True:
+                                    try:
+                                        status = int(input("Enter new status (1 = Available, 0 = Out of Service): "))
+                                        if status != 0 and status != 1:
+                                            print("Status must be 0 or 1.")
+                                            continue
+                                        break
+                                    except ValueError:
+                                        print("enter 0 or 1")
+
+                                atm_matrix[row_index][col_index] = status
+                                print("ATM updated successfully")
+
+                            elif choice== "4":
+                                break
+
+                            else:
+                                print("invalid choice, try again.")
+
+
+
+
+
+                    
+                    #####################################################################################3
+                    elif user_input == Update_personal_info:
+                        print("""** Update Personal Information **
+                        [0] Change city
+                        [1] Change phone number
+                        [2] Change password
+                        [3] Add emergency contact
+                        [4] Remove optional field""")
+
+                        cureent_user["snapshot"] = copy.deepcopy(cureent_user["profile"])
+
+                        sub_opt = input("Select option: ").strip()
+
+                        if sub_opt == "0":
+                            cureent_user["profile"].update({"city": input("Enter new city: ").strip()})
+                            print("City updated.")
+                            save_users()
+                        elif sub_opt == "1":
+                            cureent_user["profile"].update({"phone": input("Enter new phone: ").strip()})
+                            print("Phone updated.")
+                            save_users()
+                        elif sub_opt == "2":
+                            cureent_user["profile"].update({"password": input("Enter new password: ").strip()})
+                            print("Password updated.")
+                            save_users()
+                        elif sub_opt == "3":
+                            cureent_user["profile"].update({"emergency_contact": input("Enter emergency contact: ").strip()})
+                            print("Emergency contact added.")
+                            save_users()
+                        elif sub_opt == "4":
+                            pop_key = input("Enter field to remove: ").strip()
+                            save_users()
+
+                            removed_value = cureent_user["profile"].pop(pop_key, None)
+                            save_users()
+
+                            print(f"Removed: {removed_value}" if removed_value else "Field not found.")
+
+####################################################################################    
+                    elif (user_input == Exit):
+                        print("End session")
+                        break
+                    else:
+                        print("Invalid Input")
+                        print("enter number from the menu")
+            
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$44
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            else:
+                while True:
+                    print(f"*************** Welcome back {cureent_user['profile']['name']} ***************")
+                    print("[0] Deposit")
+                    print("[1] Withdraw")
+                    print("[2] Transfer")
+                    print("[3] Transaction history")
+                    
+                    print("[4] Branch/ATM status")
+                    print("[5] Update personal info")
+                    print("[6] Exit")
+                    
+                    user_input = input("please enter what do you want to do: ")
+                        
+                    if (user_input == Deposit):
+                        deposit_input = input("please enter amount and currency: ").split()
+
+                        if len(deposit_input) != 2:
+                            print("Invalid input")
+                            continue
+
+                        deposit_value, currency = deposit_input
+                        if(deposit_value.isdigit()):
+                            deposit_value = int(deposit_value)
+
+                            if (deposit_value <= 0 and (currency != "EGP" and currency != "SAR" and currency != "USD")):
+                                print("Invalid value and currency")
+                                continue
+                            elif (deposit_value <= 0):
+                                print("Invalid value")
+                                continue
+                            elif (currency != "EGP" and currency != "SAR" and currency != "USD"):
+                                print("Invalid value")
+                                continue
+
+                            if (currency == "SAR" or currency == "USD" or currency == "EGP"):
+                                if(currency == "SAR"):
+                                    cureent_user["wallet"][currency] = "SAR"
+                                    amount_in_egp = deposit_value * 9
+                                    transaction_msg = f"Deposit: {deposit_value} {currency} (+{amount_in_egp} EGP)"
+                                    cureent_user["hestory"].append(transaction_msg)
+                                    cureent_user["wallet"]["balance"] += amount_in_egp
+                                    save_users()
+
+                                elif (currency == "USD"):
+                                    cureent_user["wallet"][currency] = "USD"
+                                    amount_in_egp = deposit_value * 30
+                                    transaction_msg = f"Deposit: {deposit_value} {currency} (+{amount_in_egp} EGP)"
+                                    cureent_user["hestory"].append(transaction_msg)
+                                    cureent_user["wallet"]["balance"] += amount_in_egp
+                                    print("process success")
+
+                                    save_users()
+
+                                else:
+                                    cureent_user["wallet"][currency] = "EGP"
+                                    amount_in_egp = deposit_value
+                                    transaction_msg = f"Deposit: {deposit_value} {currency}"
+                                    cureent_user["hestory"].append(transaction_msg)
+                                    cureent_user["wallet"]["balance"] += amount_in_egp
+                                    print("process success")
+
+                                    save_users()
                         else:
-                            print("invalid choice, try again.")
+                            print("Invalid input")
+                            print("the process isn't success")
+                            continue
+########################################################################################################################
+                    elif (user_input == Withdraw):    
+                        withdraw_value = input("please enter the value: ")
+                        if(withdraw_value.isdigit()):
+                            withdraw_value = int(withdraw_value)
+                            if(withdraw_value <= 0):
+                                print("Invalid input")
+                                print("the process isn't sucsess please try again")
+                                continue
+                            else:
+                                if(withdraw_value > cureent_user["wallet"]["balance"]):
+                                    print("you don't have enogh money")
+                                    print("the process isn't sucsess")
+                                    continue
+                                else:
+                                    cureent_user["wallet"]["balance"] -= withdraw_value
 
-        ###################################################################################            
-                elif (user_input == Update_personal_info):
-                    n = int(input("""*************** Update Personal Information ***************
-[0] Change city
-[1] Change phone number
-[2] Change password
-[3] Add emergency contact
-[4] Remove optional field
-                    """))
+                                    transaction_msg = f"Withdraw: {withdraw_value}"
+                                    cureent_user["hestory"].append(transaction_msg)
+                                    save_users()
+                                    print("process success")
+                        else:
+                            print("Invalid value")
+                            print("the process isn't sucsess please try again")
 
-        ####################################################################################    
-                elif (user_input == Exit):
-                    print("End session")
-                    break
-                else:
-                    print("Invalid Input")
-                    print("enter number from the menu")
+############################################################################################################################
+                    elif (user_input == Transfer):
+                        id_input = input("please enter the id of the target user: ")
+
+                        if not id_input.isdigit():
+                            print("Invalid ID")
+                            continue
+
+                        id_target_user = int(id_input)
+                        target_user = "no one"
+
+                        for u in users:
+                            if u["id"] == id_target_user:
+                                target_user = u
+                        if (target_user == cureent_user):
+                            print("you can't transfer to your self")
+                            continue
+                        elif(target_user == "no one"):
+                            print("Invalid Id number")
+                            continue
+
+                        transfer_value = input("Enter The Transfer value: ")
+                        if not transfer_value.isdigit():
+                            print("Invalid input")
+                            continue
+                        if (int(transfer_value) <= 0):
+                            print("Invalid input")
+                            print("the Transfer isn't sucsess please try again")
+                            continue
+                        else:
+                            transfer_value = int(transfer_value)
+                            if(transfer_value > cureent_user["wallet"]["balance"]):
+                                print("you don't have enogh money please deposit money and try again")
+                                print("the Transfer isn't sucsess ")
+                            elif(transfer_value <= cureent_user["wallet"]["balance"]):
+                                cureent_user["wallet"]["balance"] -= transfer_value
+                                transaction_msg = f"transfer to {target_user['profile']['name']}: {transfer_value}"
+                                save_users()
+                                cureent_user["hestory"].append(transaction_msg)
+                                save_users()
+                                
+
+                                target_user["wallet"]["balance"] += transfer_value
+                                save_users()
+                                transaction_msg = f"transfer from {cureent_user['profile']['name']}: {transfer_value}"
+                                cureent_user["hestory"].append(transaction_msg)
+                                save_users()
+                                print("Transfer success")
+
+            ###########################################################################################################################
+                    elif (user_input == Transaction_history):
+                        if (cureent_user["hestory"] == []):
+                            print("you don't have Transaction_history")
+                            continue
+                        else:
+                            for i in cureent_user["hestory"]:
+                                print(i)
+            
+
+            ###################################################################################            
+                    elif(user_input == "4"):
+                        atm_matrix = [[1, 1, 0, 1], [1, 0, 1, 1], [0, 1, 1, 0],[1, 1, 1, 0]]
+                        while True:
+                            print("\n===============================")
+                            print("*************ATM MANAGEMENT************")
+                            print("==============================")
+                            print("1. Display ATM matrix")
+                            print("2. Count ATMs")
+                            print("3. Back to main menu")
+                            choice= input("enter choice: ")
+
+                            if choice == "1":
+                                print("\n========== ATM AVAILABILITY ==========")
+                                print("    ", end="")
+
+                                # Print column numbers based on longest row
+                                max_cols = 0
+                                for row in atm_matrix:
+                                    if len(row) > max_cols:
+                                        max_cols = len(row)
+                                for col in range(max_cols):
+                                    print("C" + str(col + 1), end="\t")
+                                print()
+
+                                # Print rows
+                                for row_index in range(len(atm_matrix)):
+                                    print("Row", row_index + 1, end="\t")
+                                    for col_index in range(len(atm_matrix[row_index])):
+                                        if atm_matrix[row_index][col_index] == 1:
+                                            print(1, end="\t")
+                                        else:
+                                            print(0, end="\t")
+                                    print()
+
+                            elif choice == "2":
+                                available = 0
+                                unavailable = 0
+                                for row in atm_matrix:
+                                    available += row.count(1)
+                                    unavailable += row.count(0)
+                                print("\n========== ATM REPORT =============")
+                                print("Available ATMs:", available)
+                                print("Unavailable ATMs:", unavailable)
+
+                            
+
+                            elif choice== "3":
+                                break
+
+                            else:
+                                print("invalid choice, try again.")
+
+
+
+
+
+                    
+                    #####################################################################################3
+                    elif (user_input == "5"):
+                        print("""** Update Personal Information **
+                        [0] Change city
+                        [1] Change phone number
+                        [2] Change password
+                        [3] Add emergency contact
+                        [4] Remove optional field""")
+
+                        cureent_user["snapshot"] = copy.deepcopy(cureent_user["profile"])
+
+                        sub_opt = input("Select option: ").strip()
+                        
+
+                        if sub_opt == "0":
+                            cureent_user["profile"].update({"city": input("Enter new city: ").strip()})
+                            save_users()
+                            print("City updated.")
+                        elif sub_opt == "1":
+                            cureent_user["profile"].update({"phone": input("Enter new phone: ").strip()})
+                            print("Phone updated.")
+                            save_users()
+                        elif sub_opt == "2":
+                            cureent_user["profile"].update({"password": input("Enter new password: ").strip()})
+                            print("Password updated.")
+                            save_users()
+                        elif sub_opt == "3":
+                            cureent_user["profile"].update({"emergency_contact": input("Enter emergency contact: ").strip()})
+                            print("Emergency contact added.")
+                            save_users()
+                        elif sub_opt == "4":
+                            pop_key = input("Enter field to remove: ").strip()
+                            save_users()
+
+                            removed_value = cureent_user["profile"].pop(pop_key, None)
+                            save_users()
+
+                            print(f"Removed: {removed_value}" if removed_value else "Field not found.")
+
+            ####################################################################################    
+                    elif (user_input == "6"):
+                        print("End session")
+                        break
+                    else:
+                        print("Invalid Input")
+                        print("enter number from the menu")
                     
     elif option == "exit":
         print("Have a nice day! Goodbye :) ")

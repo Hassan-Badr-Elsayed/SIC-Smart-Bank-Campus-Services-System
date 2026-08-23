@@ -1,0 +1,40 @@
+[
+    {
+        "id": 1,
+        "profile": {
+            "name": "Ahmed",
+            "password": "1233",
+            "phone": "01011111111",
+            "email": "example@gmail.com",
+            "gender": "Male",
+            "age": 20,
+            "city": "Fayoum",
+            "account type": "Savings",
+            "stat" : "admin"
+        },
+        "wallet": {
+            "balance" : 0,
+            "currency" : "EGP"
+        },
+        "hestory" :[]      
+    },
+    {
+        "id": 2,
+        "profile": {
+            "name": "Mohamed",
+            "password": "124",
+            "phone": "01011111112",
+            "email": "Mohmaed@gmail.com",
+            "gender": "Male",
+            "age": 20,
+            "city": "cairo",
+            "account type": "Savings",
+            "stat" : "user"
+        },
+        "wallet": {
+            "balance" : 0,
+            "currency" : "EGP"
+        },
+        "hestory" :[]      
+    }
+]
