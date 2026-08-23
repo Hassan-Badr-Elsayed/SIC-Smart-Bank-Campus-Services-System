@@ -326,7 +326,7 @@ To close the system, enter exit
                         for i in cureent_user["hestory"]:
                             print(i)
         ##################################################################################################################################
-                                elif (user_input == Reports):
+                elif (user_input == Reports):
                     while True:
                         print("\n================================")
                         print("***************** REPORTS MENU*****************")
