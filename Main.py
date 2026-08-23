@@ -222,7 +222,7 @@ To close the system, enter exit
     ######################################Hassan###########################################################
             while True:
 
-                print(f"*************** Welcome back {cureent_user["profile"]["name"]} ***************")
+                print(f"*************** Welcome back {cureent_user['profile']['name']} ***************")
                 print("[0] Deposit")
                 print("[1] Withdraw")
                 print("[2] Transfer")
@@ -327,11 +327,11 @@ To close the system, enter exit
                             print("the Transfer isn't sucsess ")
                         elif(transfer_value < cureent_user["wallet"]["balance"]):
                             cureent_user["wallet"]["balance"] -= transfer_value
-                            transaction_msg = f"transfer to {target_user["profile"]["name"]}: {transfer_value}"
+                            transaction_msg = f"transfer to {target_user['profile']['name']}: {transfer_value}"
                             cureent_user["hestory"].append(transaction_msg)
 
                             target_user["wallet"]["balance"] += transfer_value
-                            transaction_msg = f"transfer from {cureent_user["profile"]["name"]}: {transfer_value}"
+                            transaction_msg = f"transfer from {cureent_user['profile']['name']}: {transfer_value}"
                             cureent_user["hestory"].append(transaction_msg)
                             print("Transfer success")
 
@@ -362,8 +362,8 @@ To close the system, enter exit
                             email_list = []
 
                             for username in users:
-                                phone_list.append(users[username].get("phone"))
-                                email_list.append(users[username].get("email"))
+                                phone_list.append(users['profile']['name'].get("phone"))
+                                email_list.append(users['profile']['name'].get("email"))
 
                             duplicate_phones = []
                             for phone in phone_list:
@@ -394,16 +394,16 @@ To close the system, enter exit
                             transfer_users = set()
 
                             for username in users:
-                                if users[username].get("active") == True:
+                                if users['profile']['name'].get("active") == True:
                                     active_users.add(username)
 
-                                if users[username].get("vip") == True:
+                                if users['profile']['name'].get("vip") == True:
                                     vip_users.add(username)
 
-                                if users[username].get("failed_logins", 0) > 0:
+                                if users['profile']['name'].get("failed_logins", 0) > 0:
                                     failed_login_users.add(username)
 
-                                history = users[username].get("history", [])
+                                history = users['profile']['name'].get("history", [])
                                 for transaction in history:
                                     if transaction.get("type") == "transfer":
                                         transfer_users.add(username)
