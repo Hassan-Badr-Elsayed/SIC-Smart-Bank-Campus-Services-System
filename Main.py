@@ -1,52 +1,42 @@
+import copy
+from collections import defaultdict
+
+# Constant menu options
 Deposit = "0"
 Withdraw = "1"
 Transfer = "2"
 Transaction_history = "3"
-Reports = "4"
-Branch_ATM_status = "5"
-Update_personal_info = "6"
-Exit = "7"
+Branch_ATM_status = "4"
+Update_personal_info = "5"
+Exit = "6"
 
-target_user = "no one"
+# 4x4 ATM Matrix (1 = Available, 0 = Out of Service)
+atm_matrix = [
+    [1, 0, 1, 1],
+    [1, 1, 0, 1],
+    [0, 1, 1, 0],
+    [1, 0, 1, 1]
+]
 
-
-
+# Initial users with explicit roles
 users = [
-    {
-        "id": 0,
-        "profile": {
-            "name": "Admin",
-            "password": "1233",
-            "phone": "01011111111",
-            "email": "example@gmail.com",
-            "gender": "Male",
-            "age": 20,
-            "city": "Fayoum",
-            "account type": "Savings"
-        },
-        "wallet": {
-            "balance" : 0,
-            "currency" : "EGP"
-        },
-        "hestory" :[]      
-    },
     {
         "id": 1,
         "profile": {
-            "name": "Ahmed",
-            "password": "1233",
-            "phone": "01011111111",
-            "email": "example@gmail.com",
+            "name": "Ahmed Admin",
+            "password": "admin",
+            "phone": "01000000000",
+            "email": "admin@bank.com",
             "gender": "Male",
-            "age": 20,
-            "city": "Fayoum",
-            "account type": "Savings"
+            "age": 35,
+            "city": "Cairo",
+            "account type": "Admin",
+            "role": "Admin"
         },
-        "wallet": {
-            "balance" : 0,
-            "currency" : "EGP"
-        },
-        "hestory" :[]      
+        "wallet": {"balance": 0, "currency": "EGP"},
+        "settings": {"active": True, "vip": False, "failed_logins": 0},
+        "history": [],
+        "snapshot": None
     },
     {
         "id": 2,
@@ -54,86 +44,152 @@ users = [
             "name": "Mohamed",
             "password": "124",
             "phone": "01011111112",
-            "email": "Mohmaed@gmail.com",
+            "email": "Mohamed@gmail.com",
             "gender": "Male",
             "age": 20,
-            "city": "cairo",
-            "account type": "Savings"
+            "city": "Cairo",
+            "account type": "Savings",
+            "role": "VIP"
         },
-        "wallet": {
-            "balance" : 0,
-            "currency" : "EGP"
+        "wallet": {"balance": 500, "currency": "EGP"},
+        "settings": {"active": True, "vip": True, "failed_logins": 0},
+        "history": [],
+        "snapshot": None
+    },
+    {
+        "id": 3,
+        "profile": {
+            "name": "Sara",
+            "password": "999",
+            "phone": "01011111113",
+            "email": "sara@gmail.com",
+            "gender": "Female",
+            "age": 22,
+            "city": "Alexandria",
+            "account type": "Checking",
+            "role": "User"
         },
-        "hestory" :[]      
+        "wallet": {"balance": 2000, "currency": "EGP"},
+        "settings": {"active": True, "vip": False, "failed_logins": 0},
+        "history": [],
+        "snapshot": None
     }
 ]
 
-# The beginning of the program
+def reports_menu():
+    """Admin Reports Menu"""
+    while True:
+        print("\n***************** ADMIN REPORTS MENU *****************")
+        print("1. Duplicate detection")
+        print("2. User set analysis")
+        print("3. Transaction frequency report")
+        print("4. Membership check")
+        print("5. All accounts report")
+        print("6. Logout / Exit Reports")
+        choice = input("Enter choice: ").strip()
+
+        if choice == "1":
+            phone_list = [u["profile"]["phone"] for u in users]
+            email_list = [u["profile"]["email"] for u in users]
+
+            dup_phones = [p for p in set(phone_list) if phone_list.count(p) > 1]
+            dup_emails = [e for e in set(email_list) if email_list.count(e) > 1]
+
+            print("\n========== DUPLICATE REPORT ==========")
+            print("Duplicate phone numbers:", dup_phones if dup_phones else "None")
+            print("Duplicate emails:", dup_emails if dup_emails else "None")
+
+        elif choice == "2":
+            active_users = {u["profile"]["name"] for u in users if u["settings"].get("active")}
+            vip_users = {u["profile"]["name"] for u in users if u["profile"]["role"] == "VIP"}
+            failed_login_users = {u["profile"]["name"] for u in users if u["settings"].get("failed_logins", 0) > 0}
+            transfer_users = {
+                u["profile"]["name"] for u in users 
+                if any(t["type"] == "transfer" for t in u["history"])
+            }
+
+            print("\n============== USER SEGMENTS ==========")
+            print("Active users:", active_users)
+            print("VIP users:", vip_users)
+            print("Failed logins:", failed_login_users)
+            print("Transfer users:", transfer_users)
+            
+            print("\nActive OR VIP (Union):", active_users.union(vip_users))
+            print("Active AND VIP (Intersection):", active_users.intersection(vip_users))
+            print("Active but NOT VIP (Difference):", active_users.difference(vip_users))
+            print("Active or VIP, NOT both (Symmetric Diff):", active_users.symmetric_difference(vip_users))
+
+        elif choice == "3":
+            freq = defaultdict(int)
+            for u in users:
+                for t in u["history"]:
+                    freq[t["type"]] += 1
+            print("\n========== TRANSACTION FREQUENCY ==========")
+            for t_type, count in freq.items():
+                print(f"{t_type}: {count}")
+
+        elif choice == "4":
+            check_name = input("Enter user name: ").strip()
+            found = any(u["profile"]["name"].lower() == check_name.lower() for u in users)
+            print(f"Is user registered: {found}")
+
+        elif choice == "5":
+            print("\n========== ALL ACCOUNTS REPORT ==========")
+            for u in users:
+                print(f"User ID: {u['id']} | Role: {u['profile']['role']}")
+                print("Profile info:", u["profile"])
+                print("-" * 20)
+
+        elif choice == "6":
+            print("Exiting Reports Menu...")
+            break
+        else:
+            print("Invalid choice, try again.")
+
+# The beginning of the main program
 while True:
     print("\n******** SIC SMART BANK SYSTEM ********")
     print("""If you already have an account, enter login
 If you do not have an account, enter register
-To close the system, enter exit
-    """)
+To close the system, enter exit""")
     
-    option = input("> ").lower()
+    option = input("> ").lower().strip()
 
     if option == "register":
         print("=====REGISTER=====")
-        name = input("Please enter your name: ")
+        name = input("Please enter your name: ").strip()
         while not name:
             print("Empty Field !")
-            name = input("Please enter your name: ")
+            name = input("Please enter your name: ").strip()
 
-        # Password field
-        password = input("Please enter your password: ")
+        password = input("Please enter your password: ").strip()
         while not password:
             print("Empty Field !")
-            password = input("Please enter your password: ")
+            password = input("Please enter your password: ").strip()
         
-        # Phone 
         while True: 
-            phone = input("Please enter your phone: ")
-            phone_check = False
-            
-            # Phone Check 
-            for u in users:
-                if u["profile"]["phone"] == phone:
-                    phone_check = True
-                    break
-        
-            if phone_check:
+            phone = input("Please enter your phone: ").strip()
+            if any(u["profile"]["phone"] == phone for u in users):
                 print("Sorry! This Number already exists in the system.")
             elif not phone:
                 print("Phone Number is Empty!")
             else:
                 break
 
-        # Email
         while True:
-            email = input("Please enter your Email: ")
-            email_check = False
-            
-            # Email Check
-            for u in users:
-                if u["profile"]["email"] == email:
-                    email_check = True
-                    break
-            
-            if email_check:
+            email = input("Please enter your Email: ").strip()
+            if any(u["profile"]["email"] == email for u in users):
                 print("Sorry! This Email already exists in the system.")
             elif not email:
                 print("Email is Empty!")
             else:
                 break
 
-        # Other fields          
-        gender = input("Please enter your gender (Male/Female): ")
+        gender = input("Please enter your gender (Male/Female): ").strip()
 
-        # Age
         age = -1
         while age < 0:
-            age_input = input("Please enter your age: ")
+            age_input = input("Please enter your age: ").strip()
             if age_input.isdigit():
                 age = int(age_input)
                 if age < 0:
@@ -141,14 +197,15 @@ To close the system, enter exit
             else:
                 print("Invalid age input! Numbers only.")
 
-        city = input("Please enter your city: ")
-        account_type = input("Please enter your account type: ")
+        city = input("Please enter your city: ").strip()
+        account_type = input("Please enter your account type: ").strip()
 
-        # ID User (Find max ID first, then add 1 once)
-        max_id = 0
-        for u in users:
-            if u["id"] > max_id:
-                max_id = u["id"]
+        # Select Role
+        print("Select account role: [1] Standard User, [2] VIP User")
+        role_choice = input("> ").strip()
+        user_role = "VIP" if role_choice == "2" else "User"
+
+        max_id = max([u["id"] for u in users], default=0)
         new_id = max_id + 1
 
         new_user = {
@@ -161,57 +218,47 @@ To close the system, enter exit
                 "gender": gender,
                 "age": age,
                 "city": city,
-                "account type": account_type
+                "account type": account_type,
+                "role": user_role
             },
-            "wallet": {
-                "balance" : 0,
-                "currency" : "EGP"
-        },
-            "hestory" :[]      
+            "wallet": {"balance": 0, "currency": "EGP"},
+            "settings": {"active": True, "vip": (user_role == "VIP"), "failed_logins": 0},
+            "history": [],
+            "snapshot": None
         }
 
         users.append(new_user)
-        print(f"Sign up successful. Your ID is {new_id}")
+        print(f"Sign up successful. Your ID is {new_id} ({user_role} account)")
 
-    # Login Page
     elif option == "login":
         print("=====LOGIN PAGE=====")
         
-        # ID Check
-        ID_check = False
-        cureent_user = None
-
-        while not ID_check:
-            id_input = input("Please enter your ID: ")
+        current_user = None
+        while current_user is None:
+            id_input = input("Please enter your ID: ").strip()
             if not id_input.isdigit():
                 print("Invalid ID format!")
                 continue
 
             user_id = int(id_input)
-
-            for u in users:
-                if u["id"] == user_id:
-                    cureent_user = u
-                    ID_check = True
-                    break
+            current_user = next((u for u in users if u["id"] == user_id), None)
             
-            if cureent_user is None:
+            if current_user is None:
                 print("Invalid ID")
 
-        # Password Verification
         attemp = 3
         login_success = False
 
         while attemp > 0:
-            password = input(f"Please enter your password ({attemp} attempts left): ")
+            password = input(f"Please enter your password ({attemp} attempts left): ").strip()
             
-            if cureent_user["profile"]["password"] == password:
-                n = cureent_user["profile"]["name"]  
-                print(f"\nHello {n}! Welcome back.")
+            if current_user["profile"]["password"] == password:
                 login_success = True
+                current_user["settings"]["failed_logins"] = 0
                 break
             else:
                 attemp -= 1
+                current_user["settings"]["failed_logins"] += 1
                 print("Wrong password.")
 
         if not login_success:
@@ -222,7 +269,7 @@ To close the system, enter exit
     ######################################Hassan###########################################################
             while True:
 
-                print(f"*************** Welcome back {cureent_user['profile']['name']} ***************")
+                print(f"*************** Welcome back {cureent_user["profile"]["name"]} ***************")
                 print("[0] Deposit")
                 print("[1] Withdraw")
                 print("[2] Transfer")
@@ -244,75 +291,57 @@ To close the system, enter exit
                         if (deposit_value <= 0 and (currency != "EGP" and currency != "SAR" and currency != "USD")):
                             print("Invalid value and currency")
                             continue
-                        elif (deposit_value <= 0):
-                            print("Invalid value")
+                            
+                        deposit_value = int(raw_dep[0])
+                        currency = raw_dep[1].upper()
+
+                        if deposit_value <= 0 or currency not in ["EGP", "SAR", "USD"]:
+                            print("Invalid value or currency.")
                             continue
-                        elif (currency != "EGP" and currency != "SAR" and currency != "USD"):
-                            print("Invalid value")
-                            continue
 
-                        if (currency == "SAR" or currency == "USD" or currency == "EGP"):
-                            if(currency == "SAR"):
-                                cureent_user["wallet"][currency] = "SAR"
-                                amount_in_egp = deposit_value *9
-                                transaction_msg = f"Deposit: {deposit_value} {currency} (+{amount_in_egp} EGP)"
-                                cureent_user["hestory"].append(transaction_msg)
-                                cureent_user["wallet"]["balance"] = amount_in_egp
+                        rates = {"EGP": 1, "SAR": 9, "USD": 30}
+                        amount_in_egp = deposit_value * rates[currency]
 
+                        current_user["wallet"]["balance"] += amount_in_egp
+                        current_user["history"].append({
+                            "type": "deposit",
+                            "details": f"Deposit: {deposit_value} {currency} (+{amount_in_egp} EGP)"
+                        })
+                        print("Deposit Successful!")
 
-                            elif (currency == "USD"):
-                                cureent_user["wallet"][currency] = "USD"
-                                amount_in_egp = deposit_value *30
-                                transaction_msg = f"Deposit: {deposit_value} {currency} (+{amount_in_egp} EGP)"
-                                cureent_user["hestory"].append(transaction_msg)
-                                cureent_user["wallet"]["balance"] = amount_in_egp
-
+                    elif user_input == Withdraw:    
+                        withdraw_val = input("Please enter value: ").strip()
+                        if withdraw_val.isdigit():
+                            withdraw_value = int(withdraw_val)
+                            if withdraw_value <= 0:
+                                print("Invalid value.")
+                            elif withdraw_value > current_user["wallet"]["balance"]:
+                                print("You don't have enough money.")
                             else:
-                                cureent_user["wallet"][currency] = "EGP"
-                                amount_in_egp = deposit_value
-                                transaction_msg = f"Deposit: {deposit_value} {currency}"
-                                cureent_user["hestory"].append(transaction_msg)
-                                cureent_user["wallet"]["balance"] = amount_in_egp
-                    else:
-                        print("Invalid input")
-                        print("the process isn't success")
-                        continue
-        ########################################################################################################################
-                elif (user_input == Withdraw):    
-                    withdraw_value = input("please enter the value: ")
-                    if(withdraw_value.isdigit()):
-                        withdraw_value = int(withdraw_value)
-                        if(withdraw_value <= 0):
-                            print("Invalid input")
-                            print("the process isn't sucsess please try again")
-                            continue
+                                current_user["wallet"]["balance"] -= withdraw_value
+                                current_user["history"].append({
+                                    "type": "withdraw",
+                                    "details": f"Withdraw: {withdraw_value} EGP"
+                                })
+                                print("Withdrawal successful.")
                         else:
-                            if(withdraw_value > cureent_user["wallet"]["balance"]):
-                                print("you don't have enogh money")
-                                print("the process isn't sucsess")
-                                continue
-                            else:
-                                cureent_user["wallet"]["balance"] -= withdraw_value
+                            print("Invalid value.")
 
-                                transaction_msg = f"Withdraw: {withdraw_value}"
-                                cureent_user["hestory"].append(transaction_msg)
-                                print("process success")
-                    else:
-                        print("Invalid value")
-                        print("the process isn't sucsess please try again")
+                    elif user_input == Transfer:
+                        target_id_in = input("Please enter target user ID: ").strip()
+                        if not target_id_in.isdigit():
+                            print("Invalid Target ID.")
+                            continue
+                            
+                        id_target = int(target_id_in)
+                        target_user = next((u for u in users if u["id"] == id_target), None)
 
-        ############################################################################################################################
-                elif (user_input == Transfer):
-                    id_target_user = int(input("please enter the id of the target user: "))
-                    for u in users:
-                        if u["id"] == id_target_user:
-                            target_user = u
-                    if (target_user == cureent_user):
-                        print("you can't transfer to your self")
-                        continue
-                    elif(target_user == "no one"):
-                        print("Invalid Id number")
-                        continue
+                        if target_user is None:
+                            print("Invalid ID number.")
+                            continue
+                        if target_user["id"] == current_user["id"]:
+                            print("You can't transfer to yourself.")
+                            continue
 
 
                     transfer_value = input("Enter The Transfer value: ")
@@ -327,11 +356,11 @@ To close the system, enter exit
                             print("the Transfer isn't sucsess ")
                         elif(transfer_value < cureent_user["wallet"]["balance"]):
                             cureent_user["wallet"]["balance"] -= transfer_value
-                            transaction_msg = f"transfer to {target_user['profile']['name']}: {transfer_value}"
+                            transaction_msg = f"transfer to {target_user["profile"]["name"]}: {transfer_value}"
                             cureent_user["hestory"].append(transaction_msg)
 
                             target_user["wallet"]["balance"] += transfer_value
-                            transaction_msg = f"transfer from {cureent_user['profile']['name']}: {transfer_value}"
+                            transaction_msg = f"transfer from {cureent_user["profile"]["name"]}: {transfer_value}"
                             cureent_user["hestory"].append(transaction_msg)
                             print("Transfer success")
 
@@ -362,8 +391,8 @@ To close the system, enter exit
                             email_list = []
 
                             for username in users:
-                                phone_list.append(users['profile']['name'].get("phone"))
-                                email_list.append(users['profile']['name'].get("email"))
+                                phone_list.append(users[username].get("phone"))
+                                email_list.append(users[username].get("email"))
 
                             duplicate_phones = []
                             for phone in phone_list:
@@ -394,16 +423,16 @@ To close the system, enter exit
                             transfer_users = set()
 
                             for username in users:
-                                if users['profile']['name'].get("active") == True:
+                                if users[username].get("active") == True:
                                     active_users.add(username)
 
-                                if users['profile']['name'].get("vip") == True:
+                                if users[username].get("vip") == True:
                                     vip_users.add(username)
 
-                                if users['profile']['name'].get("failed_logins", 0) > 0:
+                                if users[username].get("failed_logins", 0) > 0:
                                     failed_login_users.add(username)
 
-                                history = users['profile']['name'].get("history", [])
+                                history = users[username].get("history", [])
                                 for transaction in history:
                                     if transaction.get("type") == "transfer":
                                         transfer_users.add(username)
@@ -533,29 +562,35 @@ To close the system, enter exit
                             break
 
                         else:
-                            print("invalid choice, try again.")
-                elif (user_input == Update_personal_info):
-                    print()
-                elif (user_input == Exit):
-                    print("End session")
-                    break
-                else:
-                    print("Invalid Input")
-                    print("enter number from the menu")
+                            for item in current_user["history"]:
+                                print(item["details"])
 
+                    elif user_input == Branch_ATM_status:
+                        print("\n*************** ATM Availability ***************")
+                        print("      C0  C1  C2  C3")
+                        for r_idx, row in enumerate(atm_matrix):
+                            print(f"Row {r_idx}  " + "   ".join(str(val) for val in row))
 
+                    elif user_input == Update_personal_info:
+                        print("\n*************** Update Personal Information ***************")
+                        print("[0] Change city\n[1] Change phone number\n[2] Change password")
+                        sub_opt = input("Select option: ").strip()
+                        if sub_opt == "0":
+                            current_user["profile"]["city"] = input("Enter new city: ").strip()
+                            print("City updated.")
+                        elif sub_opt == "1":
+                            current_user["profile"]["phone"] = input("Enter new phone: ").strip()
+                            print("Phone updated.")
+                        elif sub_opt == "2":
+                            current_user["profile"]["password"] = input("Enter new password: ").strip()
+                            print("Password updated.")
 
+                    elif user_input == Exit:
+                        print("Logging out...")
+                        break
 
-
-                    
-            # You can place your user menu / update personal info here
-            
     elif option == "exit":
-        print("Have a nice day! Goodbye :) ")
+        print("Goodbye!")
         break
     else:
         print("Invalid Input. Please Try again.")
-
-
-
-
