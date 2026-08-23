@@ -329,7 +329,93 @@ To close the system, enter exit
                     elif (user_input == Reports):
                         print()
                     elif (user_input == Branch_ATM_status):
-                        print()
+                       # Q3) ATM AVAILABILITY
+import random
+
+atm_matrix = [[1, 1, 0, 1], [1, 0, 1, 1], [0, 1, 1, 0],[1, 1, 1, 0]]
+while True:
+    print("\n===============================")
+    print("*************ATM MANAGEMENT************")
+    print("==============================")
+    print("1. Display ATM matrix")
+    print("2. Count ATMs")
+    print("3. Update ATM")
+    print("4. Back to main menu")
+    choice= input("enter choice: ")
+
+    if choice == "1":
+        print("\n========== ATM AVAILABILITY ==========")
+        print("    ", end="")
+
+        # Print column numbers based on longest row
+        max_cols = 0
+        for row in atm_matrix:
+         if len(row) > max_cols:
+            max_cols = len(row)
+         for col in range(max_cols):
+          print("C" + str(col + 1), end="\t")
+        print()
+
+        # Print rows
+        for row_index in range(len(atm_matrix)):
+          print("Row", row_index + 1, end="\t")
+          for col_index in range(len(atm_matrix[row_index])):
+            if atm_matrix[row_index][col_index] == 1:
+             print("available", end="\t")
+            else:
+             print("Out", end="\t")
+            print()
+
+    elif choice == "2":
+     available = 0
+     unavailable = 0
+     for row in atm_matrix:
+        available += row.count(1)
+        unavailable += row.count(0)
+     print("\n========== ATM REPORT =============")
+     print("Available ATMs:", available)
+     print("Unavailable ATMs:", unavailable)
+
+    elif choice == "3":
+        print("\n========== UPDATE ATM ==========")
+
+        while True:
+         try:
+            row = int(input("Enter row number: "))
+            column = int(input("Enter column number: "))
+            row_index = row - 1
+            col_index = column - 1
+
+            if row_index < 0 or row_index >= len(atm_matrix):
+             print("invalid row, Try again.")
+             continue
+
+# this is for each row can have a different length
+             if col_index < 0 or col_index >= len(atm_matrix[row_index]):
+              print("invalid column for this row, try again.")
+              continue
+              break
+         except ValueError:
+              print("please enter numbers only")
+
+        while True:
+         try:
+          status = int(input("Enter new status (1 = Available, 0 = Out of Service): "))
+          if status != 0 and status != 1:
+           print("Status must be 0 or 1.")
+          continue
+          break
+         except ValueError:
+          print("enter 0 or 1")
+
+        atm_matrix[row_index][col_index] = status
+        print("ATM updated successfully")
+
+    elif choice== "4":
+        break
+
+    else:
+        print("invalid choice, try again.")
                     elif (user_input == Update_personal_info):
                         print()
                     elif (user_input == Exit):
