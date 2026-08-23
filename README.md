@@ -1,101 +1,99 @@
 # SIC Smart Bank System
 
-## فكرة البرنامج
+## Program Overview
 
-برنامج بنكي بسيط يعمل من خلال الـ Console باستخدام Python.
-البرنامج يسمح للمستخدم بإنشاء حساب، تسجيل الدخول، وتنفيذ العمليات البنكية المختلفة.
-ويتم حفظ بيانات المستخدمين داخل ملف `users.json` حتى لا تضيع البيانات عند إغلاق البرنامج.
+SIC Smart Bank is a console-based banking system built with Python.
 
-## طريقة عمل البرنامج
+The program allows users to:
+- Create an account
+- Log in
+- Deposit money
+- Withdraw money
+- Transfer money
+- View transaction history
+- Update personal information
 
-عند تشغيل البرنامج تظهر الصفحة الرئيسية:
+User data is stored in a `users.json` file.
 
-- `login` لتسجيل الدخول إلى حساب موجود.
-- `register` لإنشاء حساب جديد.
-- `exit` لإغلاق البرنامج.
+## Main Menu
 
-## Register
+The main menu contains three options:
 
-عند اختيار `register` يطلب البرنامج:
+- `login` — Log in to an existing account.
+- `register` — Create a new account.
+- `exit` — Exit the program.
 
-- الاسم
-- كلمة المرور
-- رقم الهاتف
-- البريد الإلكتروني
-- النوع
-- العمر
-- المدينة
-- نوع الحساب
+## Registration
 
-ويقوم البرنامج بالتأكد من أن رقم الهاتف والبريد الإلكتروني غير مستخدمين من قبل.
+When registering, the user enters:
 
-بعد إنشاء الحساب يتم إعطاء المستخدم ID جديد، ثم يتم حفظ البيانات في `users.json`.
+- Name
+- Password
+- Phone number
+- Email
+- Gender
+- Age
+- City
+- Account type
+
+The program checks that the phone number and email are not already registered.
+
+A unique ID is generated for every new user.
 
 ## Login
 
-عند اختيار `login` يدخل المستخدم الـ ID ثم كلمة المرور.
+Users log in using their ID and password.
 
-إذا كانت البيانات صحيحة يتم تسجيل الدخول وفتح قائمة العمليات.
-عدد محاولات كلمة المرور محدود بـ 3 محاولات.
+The user has 3 password attempts.
 
-البرنامج يفرق بين نوعين من المستخدمين:
+The system supports two types of accounts:
 
-- `admin`
-- `user`
+- **Admin** — Has access to reports and ATM management.
+- **User** — Has access to normal banking operations.
 
-الـ Admin لديه صلاحيات إضافية مثل التقارير وإدارة الـ ATM.
-
-## العمليات البنكية
+## Banking Operations
 
 ### Deposit
 
-إضافة مبلغ إلى رصيد المستخدم.
-يمكن إدخال المبلغ بـ:
+Users can deposit money using:
 
 - EGP
 - SAR
 - USD
 
-ويتم تحويل SAR و USD إلى قيمتهما بالجنيه المصري حسب أسعار التحويل الموجودة في البرنامج.
+SAR and USD are converted to EGP using the exchange rates defined in the program.
 
 ### Withdraw
 
-سحب مبلغ من الحساب.
-لا يمكن سحب مبلغ أكبر من الرصيد الموجود.
+Users can withdraw money from their balance.
+
+The program prevents users from withdrawing more money than they have.
 
 ### Transfer
 
-تحويل مبلغ من مستخدم إلى مستخدم آخر باستخدام الـ ID.
+Users can transfer money to another user using their ID.
 
-البرنامج يتأكد من:
-
-- أن المستخدم الهدف موجود.
-- أن المستخدم لا يحول إلى نفسه.
-- أن المبلغ صحيح.
-- أن الرصيد يكفي للتحويل.
+The program checks that:
+- The target user exists.
+- The user is not transferring to themselves.
+- The amount is valid.
+- The sender has enough balance.
 
 ### Transaction History
 
-عرض العمليات السابقة الخاصة بالمستخدم.
+Users can view their previous transactions, including deposits, withdrawals, and transfers.
 
 ## Admin Reports
 
-الـ Admin لديه قسم Reports ويحتوي على:
+Admins have access to a Reports section.
 
 ### Duplicate Detection
 
-اكتشاف أرقام الهاتف أو البريد الإلكتروني المكررة باستخدام `set`.
+Finds duplicate phone numbers and email addresses using sets.
 
 ### User Set Analysis
 
-تقسيم المستخدمين إلى مجموعات مثل:
-
-- Active users
-- VIP users
-- Users with failed login
-- Users with transfers
-
-ويستخدم عمليات الـ Set مثل:
+Analyzes users using:
 
 - Union
 - Intersection
@@ -104,84 +102,64 @@
 
 ### Transaction Reports
 
-عرض عدد العمليات لكل نوع، واكتشاف العمليات المتكررة.
+Shows transaction frequency and repeated transaction types.
 
 ### Membership Check
 
-التأكد من انتماء مستخدم معين إلى مجموعة مثل Active أو VIP أو Transfers.
+Checks whether a user belongs to groups such as:
+
+- Active users
+- VIP users
+- Users with failed logins
+- Users who made transfers
 
 ## ATM Management
 
-البرنامج يحتوي على Matrix تمثل حالة أجهزة الـ ATM.
+The ATM system uses a 2D matrix.
 
-`1` تعني أن الـ ATM متاح.
+- `1` = Available
+- `0` = Out of Service
 
-`0` تعني أن الـ ATM غير متاح.
+The admin can:
 
-يمكن للبرنامج:
+- Display the ATM matrix
+- Count available and unavailable ATMs
+- Update an ATM status
 
-- عرض الـ ATM Matrix
-- حساب عدد الـ ATMs المتاحة وغير المتاحة
-- تحديث حالة الـ ATM
+## Personal Information
 
-## Update Personal Information
+Users can update:
 
-يمكن للمستخدم تحديث بياناته الشخصية مثل:
+- City
+- Phone number
+- Password
+- Emergency contact
+- Optional profile fields
 
-- المدينة
-- رقم الهاتف
-- كلمة المرور
-- إضافة Emergency Contact
-- حذف Field اختياري
+All changes are saved to the JSON file.
 
-## حفظ البيانات
+## Data Storage
 
-يستخدم البرنامج مكتبة `json`.
+The program uses Python's `json` module.
 
-يتم تحميل البيانات عند بداية البرنامج من:
+User data is loaded from:
 
 `users.json`
 
-وعند تعديل بيانات المستخدم يتم استخدام:
+Whenever user data is changed, the `save_users()` function saves the updated data back to the JSON file.
 
-`save_users()`
+## Project Files
 
-لحفظ التغييرات مرة أخرى داخل الملف.
+- `main.py` — Main Python program.
+- `users.json` — Stores users, wallet data, and transaction history.
+- `README.md` — Project documentation.
 
-## الملفات
+## Requirements
 
-### Python File
+- Python 3.x
+- `users.json` must be in the same folder as the Python file.
 
-يحتوي على كل منطق البرنامج والواجهات والعمليات البنكية.
-
-### users.json
-
-يحتوي على بيانات المستخدمين مثل:
-
-- ID
-- Profile
-- Wallet
-- Transaction History
-
-## تشغيل البرنامج
-
-يجب وضع ملف Python وملف `users.json` في نفس المجلد.
-
-ثم تشغيل البرنامج باستخدام:
+## How to Run
 
 ```bash
 python main.py
-```
-
-## التقنيات المستخدمة
-
-- Python
-- Lists
-- Dictionaries
-- Sets
-- Loops
-- Conditions
-- Functions
-- JSON
-- File Handling
-- Matrix / 2D Lists
