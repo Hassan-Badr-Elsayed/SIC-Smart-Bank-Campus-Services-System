@@ -13,6 +13,24 @@ target_user = "no one"
 
 users = [
     {
+        "id": 0,
+        "profile": {
+            "name": "Admin",
+            "password": "1233",
+            "phone": "01011111111",
+            "email": "example@gmail.com",
+            "gender": "Male",
+            "age": 20,
+            "city": "Fayoum",
+            "account type": "Savings"
+        },
+        "wallet": {
+            "balance" : 0,
+            "currency" : "EGP"
+        },
+        "hestory" :[]      
+    },
+    {
         "id": 1,
         "profile": {
             "name": "Ahmed",
