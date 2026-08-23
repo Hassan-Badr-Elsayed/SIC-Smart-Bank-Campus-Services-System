@@ -326,10 +326,196 @@ To close the system, enter exit
                         for i in cureent_user["hestory"]:
                             print(i)
         ##################################################################################################################################
-                elif (user_input == Reports):
-                    print()
-                elif (user_input == Branch_ATM_status):
-                    print()
+                                elif (user_input == Reports):
+                    while True:
+                        print("\n================================")
+                        print("***************** REPORTS MENU*****************")
+                        print("========================================")
+                        print("1. Duplicate detection")
+                        print("2. User set analysis")
+                        print("3. transaction reports")
+                        print("4. Membership check")
+                        print("5. back to main menu")
+                        choice = input("enter choice: ")
+
+                        if choice == "1":
+                            # DUPLICATE REPORT
+                            phone_list = []
+                            email_list = []
+
+                            for username in users:
+                                phone_list.append(users[username].get("phone"))
+                                email_list.append(users[username].get("email"))
+
+                            duplicate_phones = []
+                            for phone in phone_list:
+                                if phone_list.count(phone) > 1 and phone not in duplicate_phones:
+                                    duplicate_phones.append(phone)
+
+                            duplicate_emails = []
+                            for email in email_list:
+                                if email_list.count(email) > 1 and email not in duplicate_emails:
+                                    duplicate_emails.append(email)
+                            print("\n========== DUPLICATE REPORT ==========")
+
+                            if len(duplicate_phones) == 0:
+                                print("Duplicate phone numbers: None")
+                            else:
+                                print("Duplicate phone numbers:", duplicate_phones)
+
+                            if len(duplicate_emails) == 0:
+                                print("Duplicate emails: None")
+                            else:
+                                print("Duplicate emails:", duplicate_emails)
+
+                        elif choice == "2":
+                            # SET ANALYSIS
+                            active_users = set()
+                            vip_users = set()
+                            failed_login_users = set()
+                            transfer_users = set()
+
+                            for username in users:
+                                if users[username].get("active") == True:
+                                    active_users.add(username)
+
+                                if users[username].get("vip") == True:
+                                    vip_users.add(username)
+
+                                if users[username].get("failed_logins", 0) > 0:
+                                    failed_login_users.add(username)
+
+                                history = users[username].get("history", [])
+                                for transaction in history:
+                                    if transaction.get("type") == "transfer":
+                                        transfer_users.add(username)
+                                        break
+
+                            print("\n============== USER SEGMENTS ==========")
+                            print("Active users:", active_users)
+                            print("VIP users:", vip_users)
+                            print("Users with failed login:", failed_login_users)
+                            print("Users with transfers:", transfer_users)
+
+                            print("\n========== UNION ==============")
+                            active_or_vip = active_users.union(vip_users)
+                            print("Active OR VIP:")
+                            print(active_or_vip)
+
+                            print("\n=============== INTERSECTION ==========")
+                            active_and_vip = active_users.intersection(vip_users)
+                            print("Active AND VIP:")
+                            print(active_and_vip)
+
+                            print("\n============= DIFFERENCE ==========")
+                            active_not_vip = active_users.difference(vip_users)
+                            print("Active but NOT VIP:")
+                            print(active_not_vip)
+
+                            print("\n================ SYMMETRIC DIFFERENCE ==========")
+                            active_vip_difference = active_users.symmetric_difference(vip_users)
+                            print("Active or VIP, but NOT both:")
+                            print(active_vip_difference)
+
+                        elif choice == "3":
+                            # TRANSACTION REPORTS
+                            print("\n========== TRANSACTION REPORT ==========")
+
+                            transaction_frequency = {}
+
+                            for username in users:
+                                history = users[username].get("history", [])
+
+                                user_transaction_count = {}
+
+                                for transaction in history:
+                                    transaction_type = transaction.get("type")
+
+                                    user_transaction_count[transaction_type] = (
+                                        user_transaction_count.get(transaction_type, 0) + 1
+                                    )
+
+                                    transaction_frequency[transaction_type] = (
+                                        transaction_frequency.get(transaction_type, 0) + 1
+                                    )
+
+                                print("\nUser:", username)
+
+                                for transaction_type in user_transaction_count:
+                                    if user_transaction_count[transaction_type] > 1:
+                                        print(
+                                            "Repeated",
+                                            transaction_type,
+                                            ":",
+                                            user_transaction_count[transaction_type],
+                                            "times"
+                                        )
+
+                            print("\n========== TRANSACTION FREQUENCY ==========")
+
+                            for transaction_type in transaction_frequency:
+                                print(
+                                    transaction_type,
+                                    ":",
+                                    transaction_frequency[transaction_type]
+                                )
+
+                        elif choice == "4":
+                            # MEMBERSHIP CHECK
+                            active_users = set()
+                            vip_users = set()
+                            failed_login_users = set()
+                            transfer_users = set()
+
+                            for username in users:
+                                if users[username].get("active") == True:
+                                    active_users.add(username)
+                                if users[username].get("vip") == True:
+                                    vip_users.add(username)
+                                if users[username].get("failed_logins", 0) > 0:
+                                    failed_login_users.add(username)
+                                history = users[username].get("history", [])
+
+                                for transaction in history:
+                                    if transaction.get("type") == "transfer":
+                                        transfer_users.add(username)
+                                        break
+
+                            print("\n========== MEMBERSHIP CHECK ==========")
+                            check_username = input("Enter username: ")
+
+                            if check_username not in users:
+                                print("User doesn't exist.")
+                            else:
+                                print("\nChoose a segment:")
+                                print("1. Active")
+                                print("2. VIP")
+                                print("3. Failed login")
+                                print("4. transfers")
+
+                                while True:
+                                    seg_choice = input("Enter choice: ")
+
+                                    if seg_choice == "1":
+                                        print("is user active?", check_username in active_users)
+                                        break
+                                    elif seg_choice == "2":
+                                        print("is user VIP?", check_username in vip_users)
+                                        break
+                                    elif seg_choice == "3":
+                                        print("Has user failed login?", check_username in failed_login_users)
+                                        break
+                                    elif seg_choice == "4":
+                                        print("did user make a transfer?", check_username in transfer_users)
+                                        break
+                                    else:
+                                        print("invalid choice, try again.")
+
+                        elif choice == "5":
+                            break
+
+                        else:
+                            print("invalid choice, try again.")
                 elif (user_input == Update_personal_info):
                     print()
                 elif (user_input == Exit):
