@@ -38,9 +38,11 @@
             "currency": "EGP",
             "EGP": "EGP"
         },
-        "hestory": [],
-        "snapshot" : []
-
+        "hestory": [
+            "Deposit: 500 EGP",
+            "transfer to Mohamed: 500",
+            "transfer from Ahmed: 500"
+        ]
     },
     {
         "id": 2,
@@ -59,7 +61,6 @@
             "balance": 500,
             "currency": "EGP"
         },
-        "hestory": [],
-        "snapshot" : []
+        "hestory": []
     }
 ]
