@@ -197,6 +197,7 @@ To close the system, enter exit
                             continue
                         
                         deposit_value, currency = deposit_input
+                        currency = currency.upper()
                         if(deposit_value.isdigit()):
                             deposit_value = int(deposit_value)
                         
@@ -675,6 +676,7 @@ To close the system, enter exit
                             continue
 
                         deposit_value, currency = deposit_input
+                        currency = currency.upper()
                         if(deposit_value.isdigit()):
                             deposit_value = int(deposit_value)
 
