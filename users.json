@@ -1,11 +1,11 @@
 [
     {
-        "id": 1,
+        "id": 0,
         "profile": {
-            "name": "Ahmed",
-            "password": "1233",
+            "name": "Hassan",
+            "password": "123",
             "phone": "01011111111",
-            "email": "example@gmail.com",
+            "email": "example1@gmail.com",
             "gender": "Male",
             "age": 20,
             "city": "Fayoum",
@@ -17,11 +17,30 @@
             "currency": "EGP",
             "EGP": "EGP"
         },
-        "hestory": [
-            "Deposit: 500 EGP",
-            "transfer to Mohamed: 500",
-            "transfer from Ahmed: 500"
-        ]
+        "hestory": [],
+        "snapshot" : []
+    },
+    {
+        "id": 1,
+        "profile": {
+            "name": "Ahmed",
+            "password": "1233",
+            "phone": "01011111111",
+            "email": "example@gmail.com",
+            "gender": "Male",
+            "age": 20,
+            "city": "Fayoum",
+            "account type": "Savings",
+            "stat": "user"
+        },
+        "wallet": {
+            "balance": 0,
+            "currency": "EGP",
+            "EGP": "EGP"
+        },
+        "hestory": [],
+        "snapshot" : []
+
     },
     {
         "id": 2,
@@ -40,6 +59,7 @@
             "balance": 500,
             "currency": "EGP"
         },
-        "hestory": []
+        "hestory": [],
+        "snapshot" : []
     }
 ]
