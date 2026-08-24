@@ -10,13 +10,18 @@
             "age": 20,
             "city": "Fayoum",
             "account type": "Savings",
-            "stat" : "admin"
+            "stat": "admin"
         },
         "wallet": {
-            "balance" : 0,
-            "currency" : "EGP"
+            "balance": 0,
+            "currency": "EGP",
+            "EGP": "EGP"
         },
-        "hestory" :[]      
+        "hestory": [
+            "Deposit: 500 EGP",
+            "transfer to Mohamed: 500",
+            "transfer from Ahmed: 500"
+        ]
     },
     {
         "id": 2,
@@ -29,12 +34,12 @@
             "age": 20,
             "city": "cairo",
             "account type": "Savings",
-            "stat" : "user"
+            "stat": "user"
         },
         "wallet": {
-            "balance" : 0,
-            "currency" : "EGP"
+            "balance": 500,
+            "currency": "EGP"
         },
-        "hestory" :[]      
+        "hestory": []
     }
 ]

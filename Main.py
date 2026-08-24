@@ -315,7 +315,7 @@ To close the system, enter exit
                                 target_user["wallet"]["balance"] += transfer_value
                                 save_users()
                                 transaction_msg = f"transfer from {cureent_user['profile']['name']}: {transfer_value}"
-                                cureent_user["hestory"].append(transaction_msg)
+                                target_user["hestory"].append(transaction_msg)
                                 save_users()
                                 print("Transfer success")
                                 
@@ -792,7 +792,7 @@ To close the system, enter exit
                                 target_user["wallet"]["balance"] += transfer_value
                                 save_users()
                                 transaction_msg = f"transfer from {cureent_user['profile']['name']}: {transfer_value}"
-                                cureent_user["hestory"].append(transaction_msg)
+                                target_user["hestory"].append(transaction_msg)
                                 save_users()
                                 print("Transfer success")
 
